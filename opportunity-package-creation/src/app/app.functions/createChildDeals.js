@@ -3,42 +3,61 @@ const hubspot = require("@hubspot/api-client");
 exports.main = async (context = {}, sendResponse) => {
   const accessToken = process.env["PRIVATE_APP_ACCESS_TOKEN"];
 
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}`,
+  };
+
   const { propertiesToSend, parameters } = context;
 
   console.log("Selected studies:", parameters.selectedStudies);
 
   try {
-    // Fetch the deal's contact and company associations
-    const objectId = propertiesToSend.hs_object_id;
-    const url = `https://api.hubapi.com/crm/v3/objects/0-3/${objectId}?associations=0-1,0-2`;
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+    // Fetch the deal's contact associations
+    let contactAssociations = [];
+    const contactAssocUrl = `/crm/v4/objects/deals/${objectId}/associations/contacts?limit=500`;
+    const contactAssocResponse = await fetch(contactAssocUrl, {
+      method: 'GET',
+      headers: headers,
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
+    if (!contactAssocResponse.ok) {
+      const errorData = await contactAssocResponse.json();
       throw new Error(
         JSON.stringify({
-          message: "HubSpot API Error",
-          status: response.status,
-          statusText: response.statusText,
+          message: 'HubSpot API Error',
+          status: contactAssocResponse.status,
+          statusText: contactAssocResponse.statusText,
           body: errorData,
         })
       );
+    } else {
+      const contactAssocData = await contactAssocResponse.json();
+      contactAssociations = contactAssocData.results;
+      console.log('Contact associations fetched:', contactAssociations);
     }
 
-    const dealWithAssociations = await response.json();
-
-    // Add debugging to see what we actually received
-    console.log(
-      "Deal with associations:",
-      JSON.stringify(dealWithAssociations, null, 2)
-    );
+    // Fetch the deal's company associations
+    let companyAssociations = [];
+    const companyAssocUrl = `/crm/v4/objects/deals/${objectId}/associations/companies?limit=500`;
+    const companyAssocResponse = await fetch(companyAssocUrl, {
+      method: 'GET',
+      headers: headers,
+    });
+    if (!companyAssocResponse.ok) {
+      const errorData = await companyAssocResponse.json();
+      throw new Error(
+        JSON.stringify({
+          message: 'HubSpot API Error',
+          status: companyAssocResponse.status,
+          statusText: companyAssocResponse.statusText,
+          body: errorData,
+        })
+      );
+    } else {
+      const companyAssocData = await companyAssocResponse.json();
+      companyAssociations = companyAssocData.results;
+      console.log('Company associations fetched:', companyAssociations);
+    }
 
     const associatedData = {
       companyAssociations: dealWithAssociations.associations?.companies?.results || [],
@@ -62,7 +81,7 @@ exports.main = async (context = {}, sendResponse) => {
 
     return {
       success: true,
-      message: "Deals created successfully",
+      message: 'Deals created successfully',
       data: createdDeals,
     };
   } catch (e) {
