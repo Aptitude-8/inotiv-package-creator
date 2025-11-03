@@ -15,7 +15,7 @@ exports.main = async (context = {}, sendResponse) => {
   try {
     // Fetch the deal's contact associations
     let contactAssociations = [];
-    const contactAssocUrl = `/crm/v4/objects/deals/${objectId}/associations/contacts?limit=500`;
+    const contactAssocUrl = `/crm/v4/objects/deals/${propertiesToSend.hs_object_id}/associations/contacts?limit=500`;
     const contactAssocResponse = await fetch(contactAssocUrl, {
       method: 'GET',
       headers: headers,
@@ -38,7 +38,7 @@ exports.main = async (context = {}, sendResponse) => {
 
     // Fetch the deal's company associations
     let companyAssociations = [];
-    const companyAssocUrl = `/crm/v4/objects/deals/${objectId}/associations/companies?limit=500`;
+    const companyAssocUrl = `/crm/v4/objects/deals/${propertiesToSend.hs_object_id}/associations/companies?limit=500`;
     const companyAssocResponse = await fetch(companyAssocUrl, {
       method: 'GET',
       headers: headers,
