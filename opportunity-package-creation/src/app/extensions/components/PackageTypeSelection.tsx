@@ -87,7 +87,6 @@ export const PackageTypeSelection: React.FC<PackageTypeSelectionProps> = ({
         <List variant="unordered-styled">
           <>Owner</>
           <>Account Name</>
-          <>Primary Contact</>
           <>Opportunity Type</>
           <>Close Date</>
           <>Stage</>
