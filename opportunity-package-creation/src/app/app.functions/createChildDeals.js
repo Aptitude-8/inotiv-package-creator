@@ -60,9 +60,6 @@ exports.main = async (context = {}, sendResponse) => {
     }
 
     const associatedData = {
-      companyAssociations: dealWithAssociations.associations?.companies?.results || [],
-      contactAssociations: dealWithAssociations.associations?.contacts?.results || [],
-
       // Include the selected studies data
       selectedStudies: parameters.selectedStudies,
 
@@ -95,25 +92,25 @@ function prepareDealPayloads(associatedData) {
     const baseAssociations = [];
 
     // Add contact associations
-    associatedData.contactAssociations.forEach((assoc) => {
+    contactAssociations.forEach((assoc) => {
       const types = assoc.associationTypes.map((type) => ({
         associationCategory: type.category,
         associationTypeId: type.typeId,
       }));
       baseAssociations.push({
-        to: { id: assoc.id },
+        to: { id: assoc.toObjectId },
         types: types,
       });
     });
 
     // Add company associations
-    associatedData.companyAssociations.forEach((assoc) => {
+    companyAssociations.forEach((assoc) => {
       const types = assoc.associationTypes.map((type) => ({
         associationCategory: type.category,
         associationTypeId: type.typeId,
       }));
       baseAssociations.push({
-        to: { id: assoc.id },
+        to: { id: assoc.toObjectId },
         types: types,
       });
     });
