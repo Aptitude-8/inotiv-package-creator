@@ -12,9 +12,7 @@
       "file": "createChildDeals.js",
       "secrets": [
         "OPP_PACKAGES_ID",
-        "PRIMARY_CONTACT_ASSOC_ID",
-        "CHILD_DEAL_ASSOC_ID",
-        "DEAL_TO_COMPANY_ASSOC_ID"
+        "CHILD_DEAL_ASSOC_ID"
       ]
     }
   }
